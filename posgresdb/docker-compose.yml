@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:latest  # Latest stable Postgres
+    restart: always
+    environment:
+      POSTGRES_USER: bankuser
+      POSTGRES_PASSWORD: bankpass  # Change this in production!
+      POSTGRES_DB: bankdb
+    ports:
+      - "5432:5432"  # Expose to host (WSL) for local connections
+    volumes:
+      - db-data:/var/lib/postgresql/data  # Persistent storage
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Loads schema on first run
+
+volumes:
+  db-data:
