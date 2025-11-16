@@ -1,0 +1,17 @@
+db_id,question,sql
+apartment_rentals,Count the total number of apartment bookings.,SELECT count(*) FROM Apartment_Bookings
+apartment_rentals,Show the start dates and end dates of all the apartment bookings.,"SELECT booking_start_date ,  booking_end_date FROM Apartment_Bookings"
+apartment_rentals,What is the average number of bedrooms of all apartments?,SELECT avg(bedroom_count) FROM Apartments
+apartment_rentals,"Return the apartment numbers of the apartments with type code ""Flat"".","SELECT apt_number FROM Apartments WHERE apt_type_code  =  ""Flat"""
+apartment_rentals,"Which apartments have type code ""Flat""? Give me their apartment numbers.","SELECT apt_number FROM Apartments WHERE apt_type_code  =  ""Flat"""
+apartment_rentals,What are the first names and last names of all the guests?,"SELECT guest_first_name ,  guest_last_name FROM Guests"
+apartment_rentals,"Return the booking start date and end date for the apartments that have type code ""Duplex"".","SELECT T1.booking_start_date ,  T1.booking_start_date FROM Apartment_Bookings AS T1 JOIN Apartments AS T2 ON T1.apt_id  =  T2.apt_id WHERE T2.apt_type_code  =  ""Duplex"""
+apartment_rentals,"What is the average room count of the apartments whose booking status code is ""Provisional""?","SELECT avg(room_count) FROM Apartment_Bookings AS T1 JOIN Apartments AS T2 ON T1.apt_id  =  T2.apt_id WHERE T1.booking_status_code  =  ""Provisional"""
+apartment_rentals,Which buildings have apartments that have more than two bathrooms? Give me the addresses of the buildings.,SELECT T1.building_address FROM Apartment_Buildings AS T1 JOIN Apartments AS T2 ON T1.building_id  =  T2.building_id WHERE T2.bathroom_count  >  2
+apartment_rentals,"Show the apartment type codes and apartment numbers in the buildings managed by ""Kyle"".","SELECT T2.apt_type_code ,  T2.apt_number FROM Apartment_Buildings AS T1 JOIN Apartments AS T2 ON T1.building_id  =  T2.building_id WHERE T1.building_manager  =  ""Kyle"""
+apartment_rentals,What is the apartment number of the apartment with the most beds?,SELECT apt_number FROM Apartments ORDER BY bedroom_count DESC LIMIT 1
+apartment_rentals,Show the apartment type codes and the corresponding number of apartments sorted by the number of apartments in ascending order.,"SELECT apt_type_code ,  COUNT(*) FROM Apartments GROUP BY apt_type_code ORDER BY COUNT(*) ASC"
+apartment_rentals,What are the top three apartment types in terms of the average room count? Give me the,SELECT apt_type_code FROM Apartments GROUP BY apt_type_code ORDER BY avg(room_count) DESC LIMIT 3
+apartment_rentals,Which apartment type code is the most common among apartments with more than one bathroom?,SELECT apt_type_code FROM Apartments WHERE bathroom_count  >  1 GROUP BY apt_type_code ORDER BY count(*) DESC LIMIT 1
+apartment_rentals,Return each apartment type code along with the maximum and minimum number of rooms among each type.,"SELECT apt_type_code ,  max(room_count) ,  min(room_count) FROM Apartments GROUP BY apt_type_code"
+apartment_rentals,How many apartments do not have any facility?,SELECT count(*) FROM Apartments WHERE apt_id NOT IN (SELECT apt_id FROM Apartment_Facilities)
