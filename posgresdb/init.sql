@@ -65,28 +65,28 @@ CREATE TABLE Apartments (
     apt_number CHAR(10),
     bathroom_count INTEGER,
     bedroom_count INTEGER,
-    room_count CHAR(5),
+    room_count INTEGER,
     PRIMARY KEY (apt_id),
     UNIQUE (apt_id),
     FOREIGN KEY (building_id) REFERENCES Apartment_Buildings (building_id)
 );
 
 INSERT INTO Apartments (apt_id, building_id, apt_type_code, apt_number, bathroom_count, bedroom_count, room_count) VALUES
-(1, 808, 'Flat', 'Suite 645', 1, 3, '7'),
-(2, 624, 'Flat', 'Apt. 585', 2, 4, '5'),
-(3, 225, 'Studio', 'Apt. 908', 1, 6, '7'),
-(4, 225, 'Duplex', 'Suite 749', 1, 5, '8'),
-(5, 744, 'Flat', 'Suite 307', 2, 4, '9'),
-(6, 191, 'Studio', 'Apt. 187', 3, 5, '9'),
-(7, 790, 'Studio', 'Suite 088', 2, 4, '6'),
-(8, 153, 'Flat', 'Suite 693', 2, 3, '9'),
-(9, 624, 'Studio', 'Apt. 940', 1, 4, '8'),
-(10, 225, 'Duplex', 'Apt. 859', 2, 3, '6'),
-(11, 734, 'Flat', 'Apt. 794', 1, 5, '3'),
-(12, 673, 'Duplex', 'Apt. 477', 2, 6, '3'),
-(13, 744, 'Duplex', 'Apt. 411', 2, 5, '9'),
-(14, 225, 'Flat', 'Apt. 837', 2, 4, '8'),
-(15, 790, 'Duplex', 'Suite 634', 3, 6, '8');
+(1, 808, 'Flat', 'Suite 645', 1, 3, 7),
+(2, 624, 'Flat', 'Apt. 585', 2, 4, 5),
+(3, 225, 'Studio', 'Apt. 908', 1, 6, 7),
+(4, 225, 'Duplex', 'Suite 749', 1, 5, 8),
+(5, 744, 'Flat', 'Suite 307', 2, 4, 9),
+(6, 191, 'Studio', 'Apt. 187', 3, 5, 9),
+(7, 790, 'Studio', 'Suite 088', 2, 4, 6),
+(8, 153, 'Flat', 'Suite 693', 2, 3, 9),
+(9, 624, 'Studio', 'Apt. 940', 1, 4, 8),
+(10, 225, 'Duplex', 'Apt. 859', 2, 3, 6),
+(11, 734, 'Flat', 'Apt. 794', 1, 5, 3),
+(12, 673, 'Duplex', 'Apt. 477', 2, 6, 3),
+(13, 744, 'Duplex', 'Apt. 411', 2, 5, 9),
+(14, 225, 'Flat', 'Apt. 837', 2, 4, 8),
+(15, 790, 'Duplex', 'Suite 634', 3, 6, 8);
 
 
 CREATE TABLE Apartment_Facilities (
