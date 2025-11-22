@@ -1,0 +1,7 @@
+pandas
+gradio
+psycopg2-binary
+vanna
+chromadb
+sentence_transformers
+ollama
