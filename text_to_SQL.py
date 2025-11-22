@@ -5,8 +5,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import re
 from datetime import datetime
-import plotly.graph_objects as go
 import time
+import sys, io
 
 pd.set_option('display.max_rows', None)
 os.environ["GRADIO_TELEMETRY_ENABLED"] = "0"
@@ -129,15 +129,36 @@ def train_real(file_obj, log_txt=""):
     log_txt += "**TRAINING COMPLETED SUCCESSFULLY**\n"
     yield log_txt
 
-# ====================== INTERACT FUNCTION (log) ======================
-def interact_generate(question, log_txt=""):
+# ====================== INTERACT FUNCTION (Generate + Run SQL + Log) ======================
+def interact_generate_run(question, prev_log):
+    log_txt = prev_log or ""
+    sql = ""
     try:
+        # Capture internal print from VN/RAG
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = io.StringIO()
         sql = clean_generated_sql(vn.generate_sql(question))
-        log_txt += f"[{datetime.now():%H:%M:%S}] Q: {question}\nSQL: {sql}\n\n"
+        sys.stdout = old_stdout
+        log_txt += mystdout.getvalue()
     except Exception as e:
+        log_txt += f"[{datetime.now():%H:%M:%S}] ERROR generating SQL: {str(e)}\n"
         sql = ""
-        log_txt += f"[{datetime.now():%H:%M:%S}] Q: {question}\nERROR: {str(e)}\n\n"
-    return sql, log_txt
+
+    log_txt += f"[{datetime.now():%H:%M:%S}] Q: {question}\nGenerated SQL: {sql}\n"
+
+    # Run SQL
+    if sql:
+        df, status = execute_query_to_df(sql)
+        if status != "PASS":
+            log_txt += f"[{datetime.now():%H:%M:%S}] SQL Execution Error: {status}\n"
+            df = pd.DataFrame()
+        else:
+            log_txt += f"[{datetime.now():%H:%M:%S}] SQL Executed Successfully, {len(df)} rows returned\n"
+    else:
+        df = pd.DataFrame()
+
+    log_txt += "\n"
+    return sql, df, log_txt
 
 # ====================== UI ======================
 with gr.Blocks(title="Text_To_SQL – Database Department Rental") as demo:
@@ -145,6 +166,7 @@ with gr.Blocks(title="Text_To_SQL – Database Department Rental") as demo:
     gr.Markdown("**EM • EX • VES – Professional Text-to-SQL Evaluation System**")
 
     with gr.Tabs():
+        # --------- Train Tab ---------
         with gr.Tab("Train"):
             gr.Markdown("### Train Your Model")
             train_file = gr.File(label="Upload train.csv", file_types=[".csv"])
@@ -152,14 +174,17 @@ with gr.Blocks(title="Text_To_SQL – Database Department Rental") as demo:
             train_log = gr.Textbox(label="Training Log", lines=20, interactive=False)
             train_btn.click(fn=train_real, inputs=train_file, outputs=train_log)
 
+        # --------- Interact Tab ---------
         with gr.Tab("Interact"):
             gr.Markdown("### Ask Questions in Natural Language")
             q = gr.Textbox(label="Your Question", lines=6, placeholder="e.g. Show apartments with rent > 2000")
-            gen = gr.Button("Generate SQL", variant="secondary")
+            gen = gr.Button("Generate & Run SQL", variant="secondary")
             sql_out = gr.Textbox(label="Generated SQL", lines=10)
+            out_df = gr.Dataframe(label="Query Result")
             interact_log = gr.Textbox(label="Interaction Log", lines=20, interactive=False)
-            gen.click(fn=interact_generate, inputs=[q, interact_log], outputs=[sql_out, interact_log])
+            gen.click(fn=interact_generate_run, inputs=[q, interact_log], outputs=[sql_out, out_df, interact_log])
 
+        # --------- Schema Tab ---------
         with gr.Tab("Schema"):
             gr.Markdown("### Database Schema (DDL)")
             gr.HTML(load_ddl_schema())
